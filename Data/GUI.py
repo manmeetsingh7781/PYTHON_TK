@@ -9,8 +9,8 @@ from Data import Driver
 import tkinter as tk
 import os
 import datetime
-from tkinter import filedialog, messagebox
-
+from tkinter import filedialog, messagebox, ttk
+from PIL import Image, ImageTk
 
 class Window:
     frame = None
@@ -59,7 +59,7 @@ class Window:
 
         age_label = tk.Label(self.frame, bg=self.color, text="Enter  Age", font=("Rouge", 14))
         dob_label = tk.Label(self.frame, bg=self.color, text="Enter  DOB", font=("Rouge", 14))
-        format_text = tk.Label(self.frame, bg=self.color, text='(DD/MM/YYYY)')
+        format_text = tk.Label(self.frame, bg=self.color, text='(DD-MM-YYYY)')
         dob_day = tk.Entry(self.frame, bg=self.color, font=("Rouge", 12))
 
         dob_month = tk.Entry(self.frame, bg=self.color, font=("Rouge", 12))
@@ -127,28 +127,33 @@ class Window:
     # Search driver pending
     def find_driver_file(self, driver):
         content = []
-        try:
-            with open(os.getcwd()+"/Drivers/"+driver+"/"+driver+"-info.dat", 'r') as file:
-                for i in file.readlines():
-                    content.append(i)
-        except:
-            messagebox.showerror("Error", "File Not Found")
-
-        # Re-implementing this Object to create a new Frame
-        id_frame = Window(600, 400)
-        id_frame.tk.title(driver)
-        id_frame.show_id_card(*content)
-        id_frame.start_loop()
-        #Saved data from file into array now make it ID card
-
-
-    def show_id_card(self, *driver):
-        gap_x = 100; gap_y = 200
+        driver = "x 000"
+        optimized_str = ""
         for i in driver:
-            print(i)
-            tk.Label(self.frame, text=i).place(x=gap_x, y=gap_y)
-            gap_x+=100
-            gap_y +=100
+            if i == "/" or i == "-":
+               i = ""
+            optimized_str += i
+        driver = optimized_str
+        # try:
+        with open(os.getcwd()+"/Drivers/"+driver+"/"+driver+"-info.dat", 'r') as file:
+            for i in file.readlines():
+                content.append(i)
+        id_frame = Window(600, 600)
+        id_frame.tk.title(driver)
+        image_link = os.getcwd() + "/Drivers/" + driver + "/" + driver + "-image"+self.get_file_extention(content[-1])
+        id_frame.show_id_card(image_link, *content)
+        id_frame.start_loop()
+        # except:
+        #     messagebox.showerror("Error", "user Not Found")
+
+
+    def show_id_card(self, link, *driver):
+        y_axis = 10
+        for i in driver:
+            tk.Label(self.frame, text=i, bg=self.color, font=("Rouge", 16)).place(x=20, y=y_axis)
+            y_axis += 50
+
+        # Show Image Pending
 
 
 
@@ -158,7 +163,7 @@ class Window:
             i.destroy()
 
     def submit_form(self, *entry):
-        formated_dob = str(str(entry[2].get()) + '-'+ str(entry[3].get()) +'-'+ str(entry[4].get()))
+        formated_dob = str(str(entry[2].get()) + str(entry[3].get()) + str(entry[4].get()))
         try:
             os.mkdir(os.getcwd() + "/Drivers/")
         except FileExistsError:
@@ -168,23 +173,19 @@ class Window:
         except:
             pass
         content = []
-        for each in entry:
-            content.append(each.get())
-        self.my_driver = Driver.Driver(*content)
-        to_path = os.getcwd()+"/Drivers/"+self.my_driver.name+ " " + str(formated_dob)+"/"
-        file_format = ""
         try:
-            if str(self.path).endswith(".png"):
-                file_format = ".png"
-            elif str(self.path).endswith(".jpeg"):
-                file_format = ".jpeg"
-            elif str(self.path).endswith(".jpg"):
-                file_format = ".jpg"
+            file_format = self.get_file_extention(self.path)
+            for each in entry:
+                content.append(each.get())
+            content.append(file_format)
+            self.my_driver = Driver.Driver(*content)
+            to_path = os.getcwd() + "/Drivers/" + self.my_driver.name + " " + str(formated_dob) + "/"
             input_file = open(self.path, 'rb')
             output_file = open(to_path+self.my_driver.name+" "+ formated_dob +"-image"+file_format, 'wb')
             for each in input_file:
                 output_file.write(each)
             messagebox.showinfo("Form Submission", "Form has been submitted")
+
         except:
             messagebox.showerror("Error", "Pick A Profile Picture")
         finally:
@@ -194,7 +195,18 @@ class Window:
         self.path = filedialog.askopenfilename(initialdir=os.getcwd(), title = "Select file",filetypes = (("jpeg files","*.jpeg"),("png files","*.png"), ("jpg files","*.jpg")))
         self.choose_a_file_text = "Driver Picture"
         self.choose_a_file = tk.Label(self.frame, text=self.path[40::])
-        self.choose_a_file.place(relx=0.3, rely=0.8, relheight=0.03, relwidth=0.4)
+        self.choose_a_file.place(relx=0.3, rely=0.9, relheight=0.03, relwidth=0.4)
+
+    def get_file_extention(self, file):
+        found = False
+        string = ""
+        for i in file:
+            if i == ".":
+                found = True
+            if found and i != '\n':
+                string += i
+        return string
+
 
     # Starting the Main loop
     def start_loop(self):

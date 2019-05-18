@@ -15,7 +15,7 @@ class Driver:
     name = None
     dob_day, dob_month, dob_year = (None, None, None)
 
-    def __init__(self, name, age, dob_day, dob_month, dob_year, sex, experience, address):
+    def __init__(self, name, age, dob_day, dob_month, dob_year, sex, experience, address, profile=None):
         self.name = name
         self.age = age
         self.sex = sex
@@ -24,10 +24,11 @@ class Driver:
         self.dob_year = dob_year
         self.experience = experience
         self.address = address
+        self.profile = profile
         self.save_info()
 
     def save_info(self):
-        formated_dob = str(str(self.dob_day) + '-'+ str(self.dob_month) +'-'+ str(self.dob_year))
+        formated_dob = str(str(self.dob_day) + str(self.dob_month) + str(self.dob_year))
         try:
             os.mkdir(os.getcwd()+"/Drivers/")
         except FileExistsError:
@@ -38,10 +39,11 @@ class Driver:
         with open(os.getcwd()+"/Drivers/"+str(self.name)+ " " + formated_dob+"/"+self.name+" " + formated_dob+"-info.dat", "w") as f:
             f.write("Name: " + self.name + '\n')
             f.write("Age: " + str(self.age) + '\n')
-            f.write("Date Of Birth: " + formated_dob + '\n')
+            f.write("Date Of Birth: " + str(str(self.dob_day) + "-" + str(self.dob_month) + "-" +  str(self.dob_year)) + '\n')
             f.write("Sex: " + self.sex + '\n')
             f.write("Experience: " + str(self.experience) + '\n')
             f.write("Address: " + str(self.address) + '\n')
+            f.write("Profile Link: " + str(self.profile) + '\n')
 
 
 def get_driver_information(driver):
