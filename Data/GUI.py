@@ -1,4 +1,7 @@
 """
+API:
+    https://azure.microsoft.com/en-us/services/cognitive-services/bing-web-search-api/
+After this try to create a web browser
 
 1. Create a Driver Registration Form
 
@@ -29,24 +32,21 @@ class Window:
         self.tk = tk.Tk()
         self.canvas = tk.Canvas(self.tk, width=self.width, height=self.height)
         self.frame = tk.Frame(self.tk, bg=self.color, width=self.width, height=self.height)
+
         # Placing stuff to the screen
         self.tk.title("My Trucking")
         self.tk.iconbitmap(os.getcwd()+"/Images/icon.ico")
         self.canvas.pack()
         self.frame.place(relx=0, rely=0, relwidth=1, relheight=1)
 
-
     def show_main_menu(self, destroy_objects=None):
-
         self.label = tk.Label(self.frame, bg=self.color, text="Main Menu",  font=("Rouge", 16))
-
         driver_signup = tk.Button(self.frame, text="Register Driver", font=("Rouge", 16), command=lambda: self.show_driver_signup())
         objects = [self.label, driver_signup]
         self.search_driver_btn = tk.Button(self.frame, text="Search for Driver", font=("Rouge", 16), command=lambda: self.search_driver(objects))
         self.label.place(relx=0, rely=-0.4, relwidth=1, relheight=1)
         driver_signup.place(relx=.15, rely=.2, relwidth=0.3, relheight=0.15)
         self.search_driver_btn.place(relx=.55, rely=.2, relwidth=0.3, relheight=0.15)
-
         if destroy_objects is not None:
             self.destroy_object(*destroy_objects)
             self.backButton.destroy()
@@ -56,16 +56,12 @@ class Window:
         name = tk.Entry(self.frame, bg=self.color, font=("Rouge", 12))
         name_label = tk.Label(self.frame, bg=self.color, text="Enter Name", font=("Rouge", 14))
         age = tk.Spinbox(self.frame, bg=self.color, from_=self.minimum_age, to=70, font=("Rouge", 12))
-
         age_label = tk.Label(self.frame, bg=self.color, text="Enter  Age", font=("Rouge", 14))
         dob_label = tk.Label(self.frame, bg=self.color, text="Enter  DOB", font=("Rouge", 14))
         format_text = tk.Label(self.frame, bg=self.color, text='(DD-MM-YYYY)')
         dob_day = tk.Entry(self.frame, bg=self.color, font=("Rouge", 12))
-
         dob_month = tk.Entry(self.frame, bg=self.color, font=("Rouge", 12))
-
         dob_year = tk.Entry(self.frame, bg=self.color, font=("Rouge", 12))
-
         sex_label = tk.Label(self.frame, bg=self.color, text="Choose Gender", font=("Rouge", 14))
         sex = tk.StringVar(self.frame)
         sex.set("Choose A Gender")
@@ -80,6 +76,7 @@ class Window:
         dob_day.insert(0, datetime.datetime.now().day)
         dob_month.insert(0, datetime.datetime.now().month)
         dob_year.insert(0, datetime.datetime.now().year - self.minimum_age)
+
         # Things to destroy
         objects = [dob_label, dob_day, dob_year, dob_month, self.label, name, name_label, address, address_label, age, age_label, experience, experience_label, choose_a_file, Submit_form, sex_label, popupMenu]
         self.backButton = tk.Button(self.frame, bg=self.color, text="Go Back to Home", command=lambda: self.show_main_menu(objects))
@@ -97,7 +94,6 @@ class Window:
         experience.place(relx=0.3, rely=0.7, relheight=0.03, relwidth=0.3)
         address.place(relx=0.3, rely=0.8, relheight=0.03, relwidth=0.3)
         choose_a_file.place(relx=0.3, rely=0.9, relheight=0.03, relwidth=0.3)
-
         name_label.place(relx=0.01, rely=0.3, relheight=0.03, relwidth=0.2)
         age_label.place(relx=0.001, rely=0.4, relheight=0.03, relwidth=0.2)
         dob_label.place(relx=0.001, rely=0.5, relheight=0.03, relwidth=0.2)
@@ -107,17 +103,13 @@ class Window:
         Submit_form.place(relx=0.02, rely=0.9, relheight=0.03, relwidth=0.2)
 
     def search_driver(self, destroy_object=None):
-        #seach box    - Button
-        # should show the Driver as a Wild Card
         if destroy_object is not None:
             self.search_driver_btn.destroy()
             self.destroy_object(*destroy_object)
-
         self.label = tk.Label(self.frame, bg=self.color, text="Search Driver",  font=("Rouge", 16))
         search_bar = tk.Entry(self.frame, font=("Rouge", 16))
         search_btn = tk.Button(self.frame, text="Search", command=lambda: self.find_driver_file(search_bar.get()))
         objects = [self.label, search_bar, search_btn]
-
         self.backButton = tk.Button(self.frame, bg=self.color, text="Go Back to Home", command=lambda: self.show_main_menu(objects))
         self.label.place(relx=0, rely=-0.4, relwidth=1, relheight=1)
         search_bar.place(relx=0.35, rely=0.25, relwidth=0.3, relheight=0.04)
@@ -127,7 +119,7 @@ class Window:
     # Search driver pending
     def find_driver_file(self, driver):
         content = []
-        driver = "x 000"
+        driver = "cx 2152001"
         optimized_str = ""
         for i in driver:
             if i == "/" or i == "-":
@@ -138,29 +130,38 @@ class Window:
         with open(os.getcwd()+"/Drivers/"+driver+"/"+driver+"-info.dat", 'r') as file:
             for i in file.readlines():
                 content.append(i)
-        id_frame = Window(600, 600)
-        id_frame.tk.title(driver)
+
         image_link = os.getcwd() + "/Drivers/" + driver + "/" + driver + "-image"+self.get_file_extention(content[-1])
-        id_frame.show_id_card(image_link, *content)
-        id_frame.start_loop()
+        self.show_id_card(image_link, *content)
+
         # except:
         #     messagebox.showerror("Error", "user Not Found")
 
 
     def show_id_card(self, link, *driver):
-        y_axis = 10
+        id_frame = tk.Tk()
+        id_frame.geometry("600x600")
+        id_frame.title(driver[0])
+        content = ""
+        formated_link = ""
+        for i in link:
+            if i == "\\":
+                i = "/"
+            formated_link+=i
         for i in driver:
-            tk.Label(self.frame, text=i, bg=self.color, font=("Rouge", 16)).place(x=20, y=y_axis)
-            y_axis += 50
+            content += i + '\n'
+
+        canvas = tk.Canvas(id_frame, width=600, height=600, bg=self.color)
+        canvas.create_text(160, 220, text=content, font=("Rouge", 16))
+        print(formated_link)
+        img = ImageTk.PhotoImage(Image.open(formated_link))
+        canvas.create_image(200, 220, image=img)
+        canvas.place(relx=0, rely=0, relwidth=1, relheight=1)
+        id_frame.mainloop()
+       # tk.Label(self.frame, text=i, bg='white', font=("Rouge", 16)).place(x=20, y=y_axis)
+
 
         # Show Image Pending
-
-
-
-    @staticmethod
-    def destroy_object(*obj):
-        for i in obj:
-            i.destroy()
 
     def submit_form(self, *entry):
         formated_dob = str(str(entry[2].get()) + str(entry[3].get()) + str(entry[4].get()))
@@ -172,11 +173,13 @@ class Window:
             os.mkdir(os.getcwd() + "/Drivers/" + entry[0].get() + " " + formated_dob)
         except:
             pass
-        content = []
+
         try:
+            content = []
             file_format = self.get_file_extention(self.path)
             for each in entry:
                 content.append(each.get())
+
             content.append(file_format)
             self.my_driver = Driver.Driver(*content)
             to_path = os.getcwd() + "/Drivers/" + self.my_driver.name + " " + str(formated_dob) + "/"
@@ -185,19 +188,20 @@ class Window:
             for each in input_file:
                 output_file.write(each)
             messagebox.showinfo("Form Submission", "Form has been submitted")
-
         except:
             messagebox.showerror("Error", "Pick A Profile Picture")
         finally:
             exit(0)
 
-    def get_file_path(self):
-        self.path = filedialog.askopenfilename(initialdir=os.getcwd(), title = "Select file",filetypes = (("jpeg files","*.jpeg"),("png files","*.png"), ("jpg files","*.jpg")))
-        self.choose_a_file_text = "Driver Picture"
-        self.choose_a_file = tk.Label(self.frame, text=self.path[40::])
-        self.choose_a_file.place(relx=0.3, rely=0.9, relheight=0.03, relwidth=0.4)
+    @classmethod
+    def get_file_path(cls):
+        cls.path = filedialog.askopenfilename(initialdir=os.getcwd(), title = "Select file",filetypes = (("jpeg files","*.jpeg"),("png files","*.png"), ("jpg files","*.jpg")))
+        cls.choose_a_file_text = "Driver Picture"
+        cls.choose_a_file = tk.Label(cls.frame, text=cls.path[40::])
+        cls.choose_a_file.place(relx=0.3, rely=0.9, relheight=0.03, relwidth=0.4)
 
-    def get_file_extention(self, file):
+    @staticmethod
+    def get_file_extention(file):
         found = False
         string = ""
         for i in file:
@@ -207,6 +211,10 @@ class Window:
                 string += i
         return string
 
+    @staticmethod
+    def destroy_object(*obj):
+        for i in obj:
+            i.destroy()
 
     # Starting the Main loop
     def start_loop(self):

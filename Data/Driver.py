@@ -43,7 +43,7 @@ class Driver:
             f.write("Sex: " + self.sex + '\n')
             f.write("Experience: " + str(self.experience) + '\n')
             f.write("Address: " + str(self.address) + '\n')
-            f.write("Profile Link: " + str(self.profile) + '\n')
+            f.write("Profile Format: " + str(self.profile) + '\n')
 
 
 def get_driver_information(driver):
